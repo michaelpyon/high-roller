@@ -23,10 +23,20 @@ function TargetSelector({ onSelect }) {
 
 const SHARE_URL = 'high-roller-eight.vercel.app'
 
+// Extract a numeric score from a game-over message, if present.
+// Returns the first integer found, or null.
+function extractScore(message) {
+  const match = (message || '').match(/\d+/)
+  return match ? match[0] : null
+}
+
 function buildShareText(message, modeName) {
-  const result = (message || '').replace(/[.!]+$/, '').trim()
-  const lead = result ? result : 'I played a round'
-  return `${lead} in High Roller (${modeName}) ${SHARE_URL}`
+  const clean = (message || '').replace(/[.!]+$/, '').trim()
+  const score = extractScore(clean)
+  const lead = score
+    ? `${modeName}: ${score} pts`
+    : clean || 'Just played a round'
+  return `${lead} -- can you beat it? ${SHARE_URL}`
 }
 
 function ShareResult({ message, modeName }) {

@@ -56,7 +56,11 @@ export function sevensOutReducer(state, action) {
           celebration: 'bust',
           banner: { text: `SEVENS OUT! Lost ${lost}!`, type: 'bust' },
           gameOver: true,
-          gameOverMessage: lost > 0 ? `Rolled a 7! Lost ${lost} points.` : 'Rolled a 7 on the first roll!',
+          gameOverMessage: isNewHigh
+            ? `New record: ${lost}!`
+            : state.highScore > 0
+            ? `High score: ${state.highScore}. Rolled a 7 on ${lost} unbanked.`
+            : lost > 0 ? `Rolled a 7! Lost ${lost} points.` : 'Rolled a 7 on the first roll!',
           hint: isNewHigh ? 'So close to a new high score...' : 'The 7 strikes again!',
           hud: {
             segments: [

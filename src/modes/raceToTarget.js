@@ -52,7 +52,7 @@ export function raceToTargetReducer(state, action) {
         celebration: hitTarget ? 'victory' : null,
         banner: hitTarget ? { text: 'TARGET HIT!', type: 'victory' } : null,
         gameOver: hitTarget,
-        gameOverMessage: hitTarget ? `You hit ${state.target} in ${newRollCount} rolls!` : '',
+        gameOverMessage: hitTarget ? `${newRollCount} rolls to hit ${state.target}!` : '',
         hint: hitTarget
           ? `🎯 ${newTotal} in ${newRollCount} rolls!`
           : `${state.target - newTotal} more to go!`,
