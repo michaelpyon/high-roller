@@ -21,11 +21,64 @@ function TargetSelector({ onSelect }) {
   )
 }
 
-function GameOverOverlay({ message, onPlayAgain, onChangeMode }) {
+const SHARE_URL = 'high-roller-eight.vercel.app'
+
+function buildShareText(message, modeName) {
+  const result = (message || '').replace(/[.!]+$/, '').trim()
+  const lead = result ? result : 'I played a round'
+  return `${lead} in High Roller (${modeName}) ${SHARE_URL}`
+}
+
+function ShareResult({ message, modeName }) {
+  const [copied, setCopied] = useState(false)
+  const text = buildShareText(message, modeName)
+
+  const handleCopy = async () => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text)
+      } else {
+        const ta = document.createElement('textarea')
+        ta.value = text
+        ta.style.position = 'fixed'
+        ta.style.opacity = '0'
+        document.body.appendChild(ta)
+        ta.select()
+        document.execCommand('copy')
+        document.body.removeChild(ta)
+      }
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      setCopied(false)
+    }
+  }
+
+  const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`
+
+  return (
+    <div className="share-result">
+      <button className="roll-btn share-btn" onClick={handleCopy}>
+        {copied ? 'Copied' : 'Copy result'}
+      </button>
+      <a
+        className="roll-btn share-btn share-btn-tweet"
+        href={tweetUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Share on X
+      </a>
+    </div>
+  )
+}
+
+function GameOverOverlay({ message, modeName, onPlayAgain, onChangeMode }) {
   return (
     <div className="game-over-overlay">
       <div className="game-over-card">
         <p className="game-over-message">{message}</p>
+        <ShareResult message={message} modeName={modeName} />
         <div className="game-over-buttons">
           <button className="roll-btn game-over-btn" onClick={onPlayAgain}>
             Play Again
@@ -256,6 +309,7 @@ export default function GameShell({ modeId, onChangeMode }) {
         {mode.gameOver && (
           <GameOverOverlay
             message={mode.gameOverMessage}
+            modeName={modeInfo.name}
             onPlayAgain={handlePlayAgain}
             onChangeMode={onChangeMode}
           />
