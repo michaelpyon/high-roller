@@ -46,9 +46,12 @@ export function sevensOutReducer(state, action) {
         // BUSTED
         const lost = state.currentScore
         const isNewHigh = lost > state.highScore && lost > 0
+        const newHigh = isNewHigh ? lost : state.highScore
+        if (isNewHigh) saveHighScore(newHigh)
         return {
           ...state,
           currentScore: 0,
+          highScore: newHigh,
           firstRoll: false,
           canRoll: false,
           canHold: false,
@@ -61,11 +64,11 @@ export function sevensOutReducer(state, action) {
             : state.highScore > 0
             ? `High score: ${state.highScore}. Rolled a 7 on ${lost} unbanked.`
             : lost > 0 ? `Rolled a 7! Lost ${lost} points.` : 'Rolled a 7 on the first roll!',
-          hint: isNewHigh ? 'So close to a new high score...' : 'The 7 strikes again!',
+          hint: isNewHigh ? 'New record set before the bust!' : 'The 7 strikes again!',
           hud: {
             segments: [
               { type: 'score', label: 'Lost', value: lost, style: 'danger' },
-              { type: 'score', label: 'High Score', value: state.highScore, style: 'muted' },
+              { type: 'score', label: 'High Score', value: newHigh, style: isNewHigh ? 'gold' : 'muted' },
             ]
           },
         }
