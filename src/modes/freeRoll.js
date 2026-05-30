@@ -1,12 +1,15 @@
 export function freeRollInitial() {
   return {
     streak: 0,
+    bestStreak: 0,
+    totalRolls: 0,
     lastResult: null,
     firstRoll: true,
 
     // Mode hook contract
     canRoll: true,
     canHold: false,
+    canFinish: false,
     holdLabel: '',
     rollButtonLabel: 'Roll Dice',
     hint: 'Roll for lucky 7s, 11s, doubles, or snake eyes!',
@@ -46,12 +49,17 @@ export function freeRollReducer(state, action) {
       }
 
       const newStreak = result ? state.streak + 1 : 0
+      const newBest = Math.max(state.bestStreak, newStreak)
+      const newTotalRolls = state.totalRolls + 1
 
       return {
         ...state,
         streak: newStreak,
+        bestStreak: newBest,
+        totalRolls: newTotalRolls,
         lastResult: result,
         firstRoll: false,
+        canFinish: true,
         celebration,
         banner,
         hint: result
@@ -62,6 +70,21 @@ export function freeRollReducer(state, action) {
             ? [{ type: 'streak', label: 'STREAK', value: newStreak, resultType: result }]
             : []
         },
+      }
+    }
+    case 'FINISH': {
+      const { bestStreak, totalRolls } = state
+      const msg = bestStreak > 0
+        ? `${totalRolls} rolls, best streak ${bestStreak}`
+        : `${totalRolls} rolls, no lucky streaks`
+      return {
+        ...state,
+        canRoll: false,
+        canFinish: false,
+        gameOver: true,
+        gameOverMessage: msg,
+        celebration: null,
+        banner: null,
       }
     }
     case 'CLEAR_CELEBRATION':

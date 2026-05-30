@@ -34,6 +34,7 @@ export function mexicoInitial() {
 
     canRoll: true,
     canHold: false,
+    canFinish: false,
     holdLabel: '',
     rollButtonLabel: 'Roll Dice',
     hint: 'Higher die = tens digit. 3+5 = 53. Doubles beat non-doubles. 2+1 = MEXICO!',
@@ -76,7 +77,7 @@ export function mexicoReducer(state, action) {
       const isLastRoll = newRollCount >= 3
 
       if (isLastRoll) {
-        // Round over — finalize
+        // Round over -- finalize
         const finalScore = newBest.value
         const isNewHigh = finalScore > state.highScore
         const newHigh = isNewHigh ? finalScore : state.highScore
@@ -91,6 +92,7 @@ export function mexicoReducer(state, action) {
           roundNumber: state.roundNumber + 1,
           firstRoll: false,
           canHold: false,
+          canFinish: true,
           holdLabel: '',
           celebration: roll.isMexico ? 'jackpot' : isNewHigh ? 'high-score' : newBest.isDoubles ? 'doubles' : null,
           banner: roll.isMexico
@@ -99,8 +101,8 @@ export function mexicoReducer(state, action) {
             ? { text: `NEW HIGH SCORE! ${newBest.label}`, type: 'high-score' }
             : { text: `Round over: ${newBest.label}`, type: 'neutral' },
           hint: isNewHigh
-            ? `🏆 New record: ${newBest.label}! Go again!`
-            : `Round over — scored ${newBest.label}. Roll again!`,
+            ? `New record: ${newBest.label}! Go again or end the session!`
+            : `Round over -- scored ${newBest.label}. Roll again or end the session!`,
           hud: buildMexicoHud(roll, null, 3, newHigh),
         }
       }
@@ -113,6 +115,7 @@ export function mexicoReducer(state, action) {
         currentRoll: roll,
         firstRoll: false,
         canHold: true,
+        canFinish: true,
         holdLabel: `Keep ${newBest.label}`,
         celebration: roll.isMexico ? 'jackpot' : null,
         banner: roll.isMexico
@@ -141,15 +144,33 @@ export function mexicoReducer(state, action) {
         highScore: newHigh,
         roundNumber: state.roundNumber + 1,
         canHold: false,
+        canFinish: true,
         holdLabel: '',
         celebration: isNewHigh ? 'high-score' : null,
         banner: isNewHigh
           ? { text: `NEW HIGH SCORE! ${state.bestScore.label}`, type: 'high-score' }
           : { text: `Kept ${state.bestScore?.label}`, type: 'hold' },
         hint: isNewHigh
-          ? `🏆 New record! Round ${state.roundNumber + 1} — beat it!`
+          ? `New record! Round ${state.roundNumber + 1} -- beat it!`
           : `Kept ${state.bestScore?.label}. Round ${state.roundNumber + 1}!`,
         hud: buildMexicoHud(null, null, 3, newHigh),
+      }
+    }
+    case 'FINISH': {
+      const { highScore, roundNumber } = state
+      const rounds = roundNumber - 1
+      const msg = rounds > 0
+        ? `${rounds} round${rounds === 1 ? '' : 's'}, high score ${highScore}`
+        : `High score ${highScore}`
+      return {
+        ...state,
+        canRoll: false,
+        canHold: false,
+        canFinish: false,
+        gameOver: true,
+        gameOverMessage: msg,
+        celebration: null,
+        banner: null,
       }
     }
     case 'CLEAR_CELEBRATION':

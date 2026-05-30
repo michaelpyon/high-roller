@@ -747,6 +747,21 @@ html, body {
   100% { transform: translateX(0); opacity: 1; }
 }
 
+.finish-btn {
+  background: transparent;
+  border-color: rgba(107, 107, 128, 0.4);
+  color: var(--text-muted);
+  padding: 0.8rem 1.5rem;
+  font-size: 0.85rem;
+}
+
+.finish-btn:hover:not(:disabled) {
+  background: rgba(107, 107, 128, 0.1);
+  border-color: rgba(107, 107, 128, 0.6);
+  color: var(--text);
+  box-shadow: none;
+}
+
 /* Hint */
 .hint {
   margin-top: 1rem;

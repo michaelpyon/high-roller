@@ -308,6 +308,16 @@ export default function GameShell({ modeId, onChangeMode }) {
               {mode.holdLabel}
             </button>
           )}
+
+          {mode.canFinish && !mode.gameOver && (
+            <button
+              className="roll-btn finish-btn"
+              onClick={mode.onFinish}
+              disabled={rolling}
+            >
+              End run
+            </button>
+          )}
         </div>
 
         <p className="hint">

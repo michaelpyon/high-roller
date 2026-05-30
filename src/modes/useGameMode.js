@@ -21,12 +21,17 @@ export function useGameMode(modeId) {
     dispatch({ type: 'SET_TARGET', target })
   }, [])
 
+  const onFinish = useCallback(() => {
+    dispatch({ type: 'FINISH' })
+  }, [])
+
   return {
     ...state,
     onRollComplete,
     onHold,
     onReset,
     onSetTarget,
+    onFinish,
     modeAccent: mode.accent,
   }
 }
