@@ -25,24 +25,30 @@ The ideal evangelist is a tabletop-gaming Discord regular (r/boardgames or a ded
 
 ---
 
+## Shipped wave 2
+
+**Race to Target: remember last target on Play Again (DONE, wave 2)**
+File: `src/modes/raceToTarget.js`
+RESET now re-uses the previously chosen target instead of clearing to null. Play Again skips the target picker and starts rolling immediately, matching how players naturally expect a rematch to work.
+
+**Pig: add "End run" button once player has banked points (DONE, wave 2)**
+File: `src/modes/pig.js`
+Added `canFinish: true` after any successful HOLD, plus a FINISH action that produces a game-over card showing the total banked score. Players can now exit with a shareable result after banking one or more turns, matching the Free Roll and Mexico pattern.
+
+---
+
 ## Prioritized Plan
 
 ### Quick Wins (S, no deploy needed to develop, deploy needed to go live)
 
-**1. Sevens Out high-score bust bug (DONE, this pass)**
+**1. Sevens Out high-score bust bug (DONE, wave 1)**
 File: `src/modes/sevensOut.js`
 A silent data loss bug: rolling a 7 on a new high score never persisted the record to localStorage or updated in-state. Evangelist impact: high, because high-score tracking is the competitive hook that drives re-play and sharing.
 Effort: S. Deploy needed: yes (already committed + pushed).
 
-**2. Race to Target: remember last target on Play Again**
-File: `src/modes/raceToTarget.js`
-Currently `RESET` calls `raceToTargetInitial()`, which sets `target: null` and forces the player to re-select the target. The better UX is to keep the last target. Change: pass `target` through RESET, defaulting to null only if explicitly clearing.
-Effort: S.
+**2. Race to Target: remember last target on Play Again (DONE, wave 2)**
 
-**3. Pig: add "End run" button once player has banked > 0**
-File: `src/modes/pig.js`, `GameShell.jsx`
-Pig currently has no way to "finish" and get a game-over/share card except by winning at 100. A player who wants to share a partial session has no exit. Adding a `canFinish` path (matching Free Roll and Mexico) lets them see the share card after banking multiple turns. Low implementation risk.
-Effort: S.
+**3. Pig: add "End run" button once player has banked > 0 (DONE, wave 2)**
 
 **4. Free Roll: show total rolls in HUD (not just on finish)**
 File: `src/modes/freeRoll.js`

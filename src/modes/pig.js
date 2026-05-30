@@ -7,6 +7,7 @@ export function pigInitial() {
 
     canRoll: true,
     canHold: false,
+    canFinish: false,
     holdLabel: '',
     rollButtonLabel: 'Roll Dice',
     hint: 'Roll to build points. Hold to bank them safely. Roll a 1 and you lose your turn!',
@@ -117,11 +118,26 @@ export function pigReducer(state, action) {
         bankedScore: newBanked,
         turnTotal: 0,
         canHold: false,
+        canFinish: true,
         holdLabel: '',
         celebration: null,
         banner: { text: `Banked ${state.turnTotal}!`, type: 'hold' },
         hint: `${newBanked} banked. ${100 - newBanked} more to win!`,
         hud: buildPigHud(newBanked, 0),
+      }
+    }
+    case 'FINISH': {
+      const { bankedScore } = state
+      return {
+        ...state,
+        canRoll: false,
+        canHold: false,
+        canFinish: false,
+        gameOver: true,
+        gameOverMessage: `Finished with ${bankedScore} banked points!`,
+        celebration: null,
+        banner: null,
+        hint: `${bankedScore} points banked.`,
       }
     }
     case 'CLEAR_CELEBRATION':

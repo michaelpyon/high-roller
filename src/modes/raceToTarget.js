@@ -67,8 +67,27 @@ export function raceToTargetReducer(state, action) {
     }
     case 'CLEAR_CELEBRATION':
       return { ...state, celebration: null, banner: null }
-    case 'RESET':
+    case 'RESET': {
+      // If a target was previously chosen, start ready to roll with that same target.
+      // This way Play Again skips the target picker and re-uses the last selection.
+      const prevTarget = state.target
+      if (prevTarget) {
+        return {
+          ...raceToTargetInitial(),
+          target: prevTarget,
+          canRoll: true,
+          hint: `Roll to reach ${prevTarget}!`,
+          hud: {
+            segments: [
+              { type: 'progress', label: `Target: ${prevTarget}`, current: 0, max: prevTarget },
+              { type: 'score', label: 'Total', value: 0 },
+              { type: 'text', label: 'Rolls', value: '0' },
+            ]
+          },
+        }
+      }
       return raceToTargetInitial()
+    }
     default:
       return state
   }
